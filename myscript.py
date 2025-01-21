@@ -1,6 +1,7 @@
 import os
 import subprocess
 import time
+import requests
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -37,6 +38,15 @@ def vpn_connection(config_path):
         if process:
             process.terminate()
 
+# Function to get the current public IP address
+def get_public_ip():
+    try:
+        ip = requests.get("https://api.ipify.org").text  # You can also use 'https://checkip.amazonaws.com'
+        return ip
+    except requests.RequestException as e:
+        print(f"Error getting IP address: {e}")
+        return None
+
 # Function to initialize WebDriver with retries
 def initialize_webdriver():
     retries = 3
@@ -67,6 +77,13 @@ def search_duckduckgo(keywords):
     try:
         driver = initialize_webdriver()
         driver.get("https://duckduckgo.com")
+
+        # Get and display current public IP before searching
+        current_ip = get_public_ip()
+        if current_ip:
+            print(f"Current public IP address: {current_ip}")
+        else:
+            print("Could not determine public IP address.")
 
         for keyword in keywords:
             print(f"Searching for: {keyword}")
